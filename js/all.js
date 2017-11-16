@@ -28,7 +28,7 @@ xhr.onload = function () {
       return data.filter(function (el) {
         //RouteIDs.push(el.RouteID);
         //console.log(el.RouteID);
-        return el.RouteID.indexOf(query) == 0;
+        return el.SubRoutes[0].SubRouteName.Zh_tw.indexOf(query) == 0;
       })
     }
     console.log(filterItems(query));
@@ -40,7 +40,7 @@ xhr.onload = function () {
         str += `
           <li>
             <span class="Headsign">${items[i].SubRoutes[0].Headsign}</span><br>
-            <span class="RouteId">${items[i].RouteID}</span>
+            <span class="RouteId">${items[i].SubRoutes[0].SubRouteName.Zh_tw}</span>
           </li>
         `;
       }
