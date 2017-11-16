@@ -28,7 +28,7 @@ xhr.onload = function () {
       return data.filter(function (el) {
         //RouteIDs.push(el.RouteID);
         //console.log(el.RouteID);
-        return el.SubRoutes[0].SubRouteName.Zh_tw.indexOf(query) == 0;
+        return el.SubRoutes[0].SubRouteName.Zh_tw.indexOf(query.toUpperCase()) == 0;
       })
     }
     console.log(filterItems(query));
