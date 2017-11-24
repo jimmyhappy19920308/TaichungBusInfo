@@ -45,5 +45,23 @@ xhr.onload = function () {
     //console.log(data);
     updateList(filterItems(query));
   }
+
+  function allList(items) {
+    const len = items.length;
+    var str = '';
+    for (var i = 0; i < len; i++) {
+      str += `        
+        <li>
+          <a href="selectbusInfo.html?Zh_tw=${items[i].SubRoutes[0].SubRouteName.Zh_tw}" class="busLink">
+            <span class="Headsign">${items[i].SubRoutes[0].Headsign}</span><br>
+            <span class="RouteId">${items[i].SubRoutes[0].SubRouteName.Zh_tw}</span>
+          </a>
+        </li>
+      `;
+    }
+    list.innerHTML = str;
+  }
+  
+  allList(data);
 }
 
