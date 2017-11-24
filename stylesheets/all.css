@@ -6737,12 +6737,11 @@ h1 {
 .list li a {
   display: block; }
 
-.direction {
-  width: 35%;
+.destination {
+  width: 50%;
   margin: 15px auto; }
 
 .bustimeList li {
-  border: 1px solid #000000;
   position: relative;
   padding-bottom: 30px; }
 
@@ -6774,15 +6773,8 @@ h1 {
   background-color: #1d8bf1;
   z-index: -1; }
 
-.eTime {
-  position: absolute;
-  top: 10px;
-  left: 16.5%;
-  color: white;
-  width: 40%; }
-
 .red {
-  margin-left: 14%;
+  margin-left: 14.1%;
   background: red;
   width: 65px;
   height: 65px; }
@@ -6804,6 +6796,20 @@ h1 {
 .redTime {
   left: 15%;
   top: 9px; }
+
+.bus {
+  float: right;
+  width: 15%;
+  margin-right: 10%; }
+
+.busIcon {
+  margin-top: 15%;
+  font-size: 2rem;
+  color: #ff3c00;
+  padding-left: 10%; }
+
+.busNumber {
+  font-size: 1rem; }
 
 .startStop {
   width: 65px;
@@ -6842,6 +6848,13 @@ h1 {
   position: relative;
   bottom: -55px;
   left: 29px; }
+
+.eTime {
+  position: absolute;
+  top: 10px;
+  left: 16.5%;
+  color: white;
+  width: 40%; }
 
 .first {
   top: 3px; }
