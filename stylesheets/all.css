@@ -6723,19 +6723,20 @@ h1 {
 .content {
   padding-top: 15px; }
 
-.list {
+.list, .favorite {
   margin: 0 20px;
   padding: 0; }
 
-.list li {
+.list li, .favorite li {
   padding: 10px 0;
   padding-left: 70px;
   margin-bottom: 10px;
   background-color: #ffffff;
   border-radius: 0 10px 10px 0; }
 
-.list li a {
-  display: block; }
+.list li a, .favorite li a {
+  display: block;
+  color: #000000; }
 
 .destination {
   width: 50%;
@@ -6868,5 +6869,15 @@ h1 {
   color: #000000;
   font-size: 1.5rem;
   font-weight: bold; }
+
+.fa-heart {
+  font-size: 1.5rem;
+  color: red;
+  cursor: pointer; }
+
+.fa-heart-o {
+  font-size: 1.5rem;
+  color: red;
+  cursor: pointer; }
 
 /*# sourceMappingURL=all.css.map */
