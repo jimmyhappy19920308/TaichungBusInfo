@@ -13,6 +13,7 @@
 
 <body>
   <div class="header">
+      <button disabled id="quickstart-sign-in">Log in with Facebook</button>
       <h1>台中市公車動態資訊</h1>
       <div class="address">台中市台灣大道二段2號</div>
       <div class="selectBus">請選擇公車</div>
@@ -20,13 +21,38 @@
   </div>
 
   <div class="content">
+    <ul class="favorite">
+      
+    </ul>
     <ul class="list">
 
     </ul>
   </div>
 
 
+  
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyANyOM6tvAcm7La_W6SnDMjzTKrQ-oBLxk",
+      authDomain: "project-7b221.firebaseapp.com",
+      databaseURL: "https://project-7b221.firebaseio.com",
+      projectId: "project-7b221",
+      storageBucket: "project-7b221.appspot.com",
+      messagingSenderId: "831645628023"
+    };
+    firebase.initializeApp(config);
+  </script>
+  
+  
+  <script>
+    window.onload = function() {
+      initApp();
+    };
+  </script>
   <script src="js/all.js"></script>
+
 </body>
 
 </html>
