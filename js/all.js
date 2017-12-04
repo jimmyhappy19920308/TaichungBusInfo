@@ -115,7 +115,7 @@ function addItem(e){
     }
   }else{
 
-    alert('請先登入 Facebook 帳號');
+    alert('請先登入');
     toggleSignIn();
   }
 
@@ -178,8 +178,8 @@ function addItem(e){
   
 
 
-
-function toggleSignIn() {
+document.getElementById('quickstart-sign-out').style.display = "none";
+function SignIn() {
   if (!firebase.auth().currentUser) {
     // [START createprovider]
     var provider = new firebase.auth.FacebookAuthProvider();
@@ -215,38 +215,63 @@ function toggleSignIn() {
       // [END_EXCLUDE]
     });
     // [END signin]
-  } else {
+
+  } 
+  // [START_EXCLUDE]
+
+  //document.getElementById('quickstart-sign-in').disabled = true;
+  // [END_EXCLUDE]
+}
+
+function SignOut(){
     // [START signout]
     firebase.auth().signOut();
+    document.getElementById('quickstart-sign-out').style.display = 'none';
+    document.getElementById('quickstart-sign-in').style.display = 'block';
+    document.getElementById('fbName').style.display = 'none';
     // [END signout]
-  }
-  // [START_EXCLUDE]
-  document.getElementById('quickstart-sign-in').disabled = true;
-  // [END_EXCLUDE]
 }
 
 function initApp() {
   // Listening for auth state changes.
   // [START authstatelistener]
+  document.getElementById('quickstart-sign-out').style.display = 'none';
+  document.getElementById('fbName').style.display = 'none';
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       
       var uid = user.uid;
       var isAnonymous = user.isAnonymous;
       var providerData = user.providerData;
+      let name = user.displayName;
+
+
+      console.log(name);
       console.log(user.uid);
       console.log(isAnonymous);
       uuid = uid;
       isNotLogin = isAnonymous;
+
+      document.querySelector('.favorite').style.display = "block";
+
+      document.getElementById('quickstart-sign-in').style.display = 'none';
+      document.getElementById('quickstart-sign-out').style.display = 'block';
+      document.getElementById('fbName').style.display = 'block';
+      document.getElementById('fbName').textContent = `歡迎 ${name}`;
+
+      
       
       
       // [END_EXCLUDE]
-    } 
+    }else{
+      document.querySelector('.favorite').style.display = "none";
+    }
     // [START_EXCLUDE]
-    document.getElementById('quickstart-sign-in').disabled = false;
+    //document.getElementById('quickstart-sign-in').disabled = false;
     // [END_EXCLUDE]
   });
   // [END authstatelistener]
 
-  document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false);
+  document.getElementById('quickstart-sign-in').addEventListener('click', SignIn, false);
+  document.getElementById('quickstart-sign-out').addEventListener('click', SignOut, false);
 }
