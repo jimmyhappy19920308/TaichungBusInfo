@@ -9,6 +9,8 @@ var uuid = '';
 var isNotLogin;
 var alreadyBusRoute = [];
 var addFavorite = firebase.database().ref('addFavorite');
+var isDisplay = 1;
+var a;
 
 // addFavorite.push({
 //   "busHeadsign": 'busHeadsign',
@@ -100,20 +102,30 @@ function addItem(e){
   console.log(busRoute);
 
   if(isNotLogin == false){
+    
+    e.target.parentElement.style.display = 'none';
+    a = function(){
+      e.target.parentElement.style.display = 'block';
+    }
+
     if(alreadyBusRoute.indexOf(busRoute) > -1){
+
       console.log(`${busRoute}已經在陣列中`);
       console.log(alreadyBusRoute);
       console.log(alreadyBusRoute.indexOf(busRoute) > -1);
     }else{
+
       //將資料新增到firebase
-      addFavorite.push({
-        "busHeadsign": busHeadsign,
-        "busRoute": busRoute,
-        "uuid": uuid
-      });
+        addFavorite.push({
+          "busHeadsign": busHeadsign,
+          "busRoute": busRoute,
+          "uuid": uuid
+        });
+
       alreadyBusRoute.push(busRoute);
     }
   }else{
+    
 
     alert('請先登入');
     toggleSignIn();
@@ -134,7 +146,7 @@ function addItem(e){
         if(dataQ.uuid == uuid){
           strF += `
           <li>
-            <i data-key="${data.key}" class="fa fa-heart add" aria-hidden="true"></i>
+            <i data-key="${data.key}" data-busroute="${dataQ.busRoute}" class="fa fa-heart add" aria-hidden="true"></i>
             <a href="selectbusInfo.html?Zh_tw=${dataQ.busRoute}" class="busLink">
               <span class="Headsign">${dataQ.busHeadsign}</span><br>
               <span class="RouteId">${dataQ.busRoute}</span>
@@ -156,14 +168,16 @@ function addItem(e){
         removeBtn[item].addEventListener('click', removeItem, false);
         function removeItem(e){
           let key = e.target.dataset.key;
-          addFavorite.on('value', function(snapshot){
-            let nowData2 = snapshot.val();
-            for(let item in nowData2){
-              //console.log(nowData2[item].busRoute);
-              alreadyBusRoute.splice(alreadyBusRoute.length - 1, 1);
-    
-            }
-          });
+          let busroute = e.target.dataset.busroute;
+          alreadyBusRoute.splice(alreadyBusRoute.length - 1, 1);
+          if(alreadyBusRoute.indexOf(busroute) > -1){
+          }else{
+            a();
+
+          }
+
+
+
           addFavorite.child(key).remove();
         }
       }
