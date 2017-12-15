@@ -1,35 +1,21 @@
-const favorite = document.querySelector('.favorite');
-const list = document.querySelector('.list');
+var searchBus = document.querySelector('.searchBus');
+var favorite = document.querySelector('.favorite');
+var list = document.querySelector('.list');
+
 var data = '';
-var RouteIDs = [];
 var query = '';
 var filterItems;
-const searchBus = document.querySelector('.searchBus');
-var uuid = '';
+
 var isNotLogin;
-var alreadyBusRoute = [];
-var addFavorite = firebase.database().ref('addFavorite');
-var isDisplay = 1;
-var a;
+var userList = [];
 
-// addFavorite.push({
-//   "busHeadsign": 'busHeadsign',
-//   "busRoute": 'busRoute',
-//   "uuid": 'uuid'
-// });
-
-
-
-
-
-
-const xhr = new XMLHttpRequest();
+var xhr = new XMLHttpRequest();
 xhr.open('get', 'https://ptx.transportdata.tw/MOTC/v2/Bus/Route/City/Taichung?$top=300&$format=JSON', true);
 xhr.send(null);
 xhr.onload = function () {
   if (xhr.status == 200) { //http狀態碼=200執行程式碼
     data = JSON.parse(xhr.responseText);
-
+  
     searchBus.addEventListener('input', keywordSearch);
     
       function keywordSearch(e) {
@@ -37,18 +23,18 @@ xhr.onload = function () {
         query = e.target.value;
         filterItems = function (query) {
           return data.filter(function (el) {
-            //RouteIDs.push(el.RouteID);
             //console.log(el.RouteID);
             return el.SubRoutes[0].SubRouteName.Zh_tw.indexOf(query.toUpperCase()) == 0;
           });
         }
         function updateList(items) {
           const len = items.length;
+
           var str = '';
           for (var i = 0; i < len; i++) {
             str += `        
               <li>
-                <i class="fa fa-heart-o add" aria-hidden="true"></i>
+                <i data-key1="${items[i].SubRoutes[0].Headsign}" data-key2="${items[i].SubRoutes[0].SubRouteName.Zh_tw}" class="fa fa-heart-o add" aria-hidden="true"></i>
                 <a href="selectbusInfo.html?Zh_tw=${items[i].SubRoutes[0].SubRouteName.Zh_tw}" class="busLink">
                   <span class="Headsign">${items[i].SubRoutes[0].Headsign}</span><br>
                   <span class="RouteId">${items[i].SubRoutes[0].SubRouteName.Zh_tw}</span>
@@ -60,6 +46,7 @@ xhr.onload = function () {
         }
         //console.log(data);
         updateList(filterItems(query));
+
       }
     
       function allList(items) {
@@ -70,7 +57,7 @@ xhr.onload = function () {
             <li>
               <i data-key1="${items[i].SubRoutes[0].Headsign}" data-key2="${items[i].SubRoutes[0].SubRouteName.Zh_tw}" class="fa fa-heart-o add" aria-hidden="true"></i>
               <a href="selectbusInfo.html?Zh_tw=${items[i].SubRoutes[0].SubRouteName.Zh_tw}" class="busLink">
-                <span class="Headsign">${items[i].SubRoutes[0].Headsign}</span><br>
+                <span class="Headsign a">${items[i].SubRoutes[0].Headsign}</span><br>
                 <span class="RouteId">${items[i].SubRoutes[0].SubRouteName.Zh_tw}</span>
               </a>
             </li>
@@ -81,116 +68,64 @@ xhr.onload = function () {
       }
       allList(data);
 
-  } else { //http狀態碼為其他值則執行以下程式碼
+      /* 加到最愛 */
+      //list = document.querySelectorAll('.list');
+      //var add = document.querySelectorAll('.list li i');
+      // var addbtn = Array.from(add);
+      // console.log(addbtn);
+
+      // for(let item in addbtn){
+      //   //console.log(addbtn[item]);
+      //   addbtn[item].addEventListener('click', addItem, false);
+      // }
+      list.addEventListener('click', addItem, false);
+
+      function addItem(e){
+        if(e.target.nodeName == "I" && isNotLogin == undefined){
+          console.log(e);
+          alert('請先登入');
+          SignIn();
+        }
+
+        // if(isNotLogin == false ){
+        //   //let busHeadsign = e.target.dataset.key1;
+        //   //let busRoute = e.target.dataset.key2;
+        //   //console.log(busHeadsign);
+        //   //console.log(busRoute);
+        //   //User.child('Favorite').push({'Headsign': busHeadsign, 'SubRouteName': busRoute});
+        // }else{
+
+        // }
+        // console.log(key);
+        // //let List = firebase.database().ref(uid).child('List').child(key);
+        // // List.child(key).once('value').then(function(snapshot){
+        // //   console.log(snapshot.val());
+        // // });
+      }
+
+  }else { //http狀態碼為其他值則執行以下程式碼
     alert('沒撈到資料');
   }
-
-
-  /* 加到最愛 */
-var add = document.querySelectorAll('.list li i');
-var addbtn = Array.from(add);
-
-for(let item in addbtn){
-  //console.log(addbtn[item]);
-  addbtn[item].addEventListener('click', addItem, false);
-}
-
-function addItem(e){
-  var busHeadsign = e.target.dataset.key1;
-  var busRoute = e.target.dataset.key2;
-  console.log(busHeadsign);
-  console.log(busRoute);
-
-  if(isNotLogin == false){
-    
-    e.target.parentElement.style.display = 'none';
-    a = function(){
-      e.target.parentElement.style.display = 'block';
-    }
-
-    if(alreadyBusRoute.indexOf(busRoute) > -1){
-
-      console.log(`${busRoute}已經在陣列中`);
-      console.log(alreadyBusRoute);
-      console.log(alreadyBusRoute.indexOf(busRoute) > -1);
-    }else{
-
-      //將資料新增到firebase
-        addFavorite.push({
-          "busHeadsign": busHeadsign,
-          "busRoute": busRoute,
-          "uuid": uuid
-        });
-
-      alreadyBusRoute.push(busRoute);
-    }
-  }else{
-    
-
-    alert('請先登入');
-    toggleSignIn();
-  }
-
-}
-  
-  /* 將資料渲染到網頁 */
-
-  addFavorite.on('value', function(snapshot){
-    var strF = '';
-    var addData = snapshot.val();
-
-
-      snapshot.forEach(function(data){
-        let dataQ = data.val();
-        //console.log(dataQ.uuid);
-        if(dataQ.uuid == uuid){
-          strF += `
-          <li>
-            <i data-key="${data.key}" data-busroute="${dataQ.busRoute}" class="fa fa-heart add" aria-hidden="true"></i>
-            <a href="selectbusInfo.html?Zh_tw=${dataQ.busRoute}" class="busLink">
-              <span class="Headsign">${dataQ.busHeadsign}</span><br>
-              <span class="RouteId">${dataQ.busRoute}</span>
-            </a>
-          </li>
-          `;
-        }
- 
-      });
-    favorite.innerHTML = strF;
-
-      //刪除最愛(必須等字串組完)
-      var remove = document.querySelectorAll('.favorite li i');
-      var removeBtn = Array.from(remove);
-      //console.log(removeBtn);
-    
-      for(let item in removeBtn){
-        //console.log(addbtn[item]);
-        removeBtn[item].addEventListener('click', removeItem, false);
-        function removeItem(e){
-          let key = e.target.dataset.key;
-          let busroute = e.target.dataset.busroute;
-          alreadyBusRoute.splice(alreadyBusRoute.length - 1, 1);
-          if(alreadyBusRoute.indexOf(busroute) > -1){
-          }else{
-            a();
-
-          }
-
-
-
-          addFavorite.child(key).remove();
-        }
-      }
-  });
-
-
 
 }//XMLHttpRequest結束
 
 
-
-  
-
+function localList(){
+  var str = '';
+  for(let item in data){
+    str += `
+      <li>
+        <i class="fa fa-heart-o add" aria-hidden="true"></i>
+        <a href="selectbusInfo.html?Zh_tw=${data[item].SubRoutes[0].SubRouteName.Zh_tw}" class="busLink">
+          <span class="Headsign ab">${data[item].SubRoutes[0].Headsign}</span><br>
+          <span class="RouteId">${data[item].SubRoutes[0].SubRouteName.Zh_tw}</span>
+        </a>
+      </li>
+    `;
+  }
+  list.innerHTML = str;
+  favorite.innerHTML = '';
+}
 
 document.getElementById('quickstart-sign-out').style.display = "none";
 function SignIn() {
@@ -233,7 +168,6 @@ function SignIn() {
   } 
   // [START_EXCLUDE]
 
-  //document.getElementById('quickstart-sign-in').disabled = true;
   // [END_EXCLUDE]
 }
 
@@ -247,38 +181,155 @@ function SignOut(){
 }
 
 function initApp() {
+
+
   // Listening for auth state changes.
   // [START authstatelistener]
   document.getElementById('quickstart-sign-out').style.display = 'none';
   document.getElementById('fbName').style.display = 'none';
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
+      //console.log(list);
+
+      //list.innerHTML = '';
+      
       
       var uid = user.uid;
       var isAnonymous = user.isAnonymous;
       var providerData = user.providerData;
-      let name = user.displayName;
+      var name = user.displayName;
+      //var list = document.querySelector('.list');
 
 
-      console.log(name);
-      console.log(user.uid);
-      console.log(isAnonymous);
-      uuid = uid;
+
+
+      //console.log(name);
+      //console.log(user.uid);
+      //console.log(isAnonymous);
       isNotLogin = isAnonymous;
 
-      document.querySelector('.favorite').style.display = "block";
+      var User = firebase.database().ref(uid);
+
+      firebase.database().ref().once('value').then(function(snapshot){
+        //console.log(snapshot.val());
+        //console.log(snapshot.key);
+        snapshot.forEach(function(Data){
+          //console.log(Data.key);
+          //console.log(Data.val());
+          userList.push(Data.key);
+        });
+
+        if(userList.indexOf(uid) === -1){
+          console.log(userList);
+          console.log(data);
+          for(item in data){
+            //console.log(data);
+            User.child('List').push({'Headsign': data[item].SubRoutes[0].Headsign,
+            'SubRouteName': data[item].SubRoutes[0].SubRouteName.Zh_tw
+            });
+          }
+
+
+        }else if(userList.indexOf(uid) > -1){
+          console.log(userList);
+          console.log('uid已存在');
+
+        }
+      });
+
+      User.child('List').orderByChild('SubRouteName').on('value', function(snapshot){
+        var str = '';
+        //console.log(snapshot.val());
+        //console.log(snapshot.val());
+        snapshot.forEach(function(data){
+            //console.log(data.key);
+            //console.log(data.val());
+            var lHeadsign = data.val().Headsign;
+            var lRouteName = data.val().SubRouteName;
+            //console.log(lRouteName);
+            var key = data.key;
+            str +=`
+            <li>
+                <i data-key="${key}" data-key1="${lHeadsign}" data-key2="${lRouteName}" class="fa fa-heart-o add" aria-hidden="true"></i>
+                <a href="selectbusInfo.html?Zh_tw=${lRouteName}" class="busLink">
+                <span class="Headsign">${lHeadsign}</span><br>
+                <span class="RouteId">${lRouteName}</span>
+                </a>
+            </li>
+            `;
+            
+        });
+        list.innerHTML = str;
+      });
+
+      list.addEventListener('click',addFavorite, false);
+      
+      function addFavorite(e){
+        console.log(isNotLogin);
+        if(e.target.nodeName =="I"){
+
+          console.log(isNotLogin);
+          console.log(e);
+          var datakey = e.target.dataset.key;
+          var busHeadsign = e.target.dataset.key1;
+          var busRoute = e.target.dataset.key2;
+          User.child('Favorite').push({'Headsign': busHeadsign, 'SubRouteName': busRoute});
+          User.child('List').child(datakey).remove();
+        }
+      }
+
+      User.child('Favorite').orderByChild('SubRouteName').on('value', function(snapshot){
+
+        console.log(snapshot.val());
+        let val = snapshot.val();
+        //console.log(fHeadsign);
+        var str = '';
+        
+        snapshot.forEach(function(Data){
+            let favoriteVal = Data.val();
+            let favoriteKey = Data.key;
+            console.log(favoriteKey);
+            let fHeadsign = favoriteVal.Headsign;
+            let fRouteName = favoriteVal.SubRouteName;
+            console.log(favoriteVal);
+            str +=`
+            <li>
+                <i data-key="${favoriteKey}" data-key1="${fHeadsign}" data-key2="${fRouteName}" class="fa fa-heart add" aria-hidden="true"></i>
+                <a href="selectbusInfo.html?Zh_tw=${fRouteName}" class="busLink">
+                <span class="Headsign">${fHeadsign}</span><br>
+                <span class="RouteId">${fRouteName}</span>
+                </a>
+            </li>
+            `;
+        });
+        favorite.innerHTML = str;
+      });
+
+        favorite.addEventListener('click', removeFavorite, false);
+        
+        function removeFavorite(e){
+        var fKey = e.target.dataset.key;
+        var fHeadsign = e.target.dataset.key1;
+        var fRouteName = e.target.dataset.key2;
+        
+        if(e.target.nodeName = "I"){
+          User.child('Favorite').child(fKey).remove();
+          User.child('List').push({'Headsign': fHeadsign,
+          'SubRouteName': fRouteName
+          });
+        }
+        }
+        
 
       document.getElementById('quickstart-sign-in').style.display = 'none';
       document.getElementById('quickstart-sign-out').style.display = 'block';
       document.getElementById('fbName').style.display = 'block';
       document.getElementById('fbName').textContent = `歡迎 ${name}`;
-
-      
-      
       
       // [END_EXCLUDE]
     }else{
-      document.querySelector('.favorite').style.display = "none";
+      localList();
+      console.log(user);
     }
     // [START_EXCLUDE]
     //document.getElementById('quickstart-sign-in').disabled = false;
@@ -289,3 +340,5 @@ function initApp() {
   document.getElementById('quickstart-sign-in').addEventListener('click', SignIn, false);
   document.getElementById('quickstart-sign-out').addEventListener('click', SignOut, false);
 }
+
+
