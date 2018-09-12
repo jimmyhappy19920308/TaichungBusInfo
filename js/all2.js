@@ -55,7 +55,7 @@ function getBusInfo(){
         //console.log(data);
     
         function updateList(items) {
-          const len = items.length;
+          var len = items.length;
           //console.log(len);
           
           var str = '';
@@ -64,7 +64,7 @@ function getBusInfo(){
             //console.log(go);
             go.value = `往${items[len-1].StopName.Zh_tw}`;
             come.value = `往${items[0].StopName.Zh_tw}`;
-            const Time = Math.floor(items[i].EstimateTime / 60);
+            var Time = Math.floor(items[i].EstimateTime / 60);
             if(items[i].EstimateTime == undefined){
               str += `
                 <li>
@@ -125,14 +125,14 @@ function getBusInfo(){
         data2 = JSON.parse(xhr2.responseText);
         //console.log(data2);
         function updateList(items) {
-          const len = items.length;
+          var len = items.length;
           //console.log(len);
           
           var str = '';
           for (var i = 0; i < len; i++) {
             //console.log(go);
 
-            const Time = Math.floor(items[i].EstimateTime / 60);
+            var Time = Math.floor(items[i].EstimateTime / 60);
             if(items[i].EstimateTime == undefined){
               str += `
                 <li>
