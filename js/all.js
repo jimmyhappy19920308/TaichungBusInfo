@@ -20,45 +20,97 @@ xhr.onload = function() {
   if (xhr.status == 200) {
     //http狀態碼=200執行程式碼
     data = JSON.parse(xhr.responseText);
+    // console.log(data);
 
     searchBus.addEventListener('input', keywordSearch);
 
     function keywordSearch(e) {
       query = e.target.value;
-      filterItems = function(query) {
-        return data.filter(function(el) {
-          return (
-            el.SubRoutes[0].SubRouteName.Zh_tw.indexOf(query.toUpperCase()) == 0
-          );
-        });
-      };
+      firebase.auth().onAuthStateChanged(function(user) {
+        // console.log(user);
+        if(user){
+          // console.log(user.uid);
+          var User = firebase.database().ref(user.uid);
+          var routeLists = [];
 
-      function updateList(items) {
-        var len = items.length;
+          User.child('List')
+          .orderByChild('SubRouteName')
+          .on('value',async function(snapshot) {
+            await snapshot.forEach(function(data){
+              var lHeadsign = data.val().Headsign;
+              var lRouteName = data.val().SubRouteName;
+              var key = data.key;
+              routeLists.push({
+                key: key,
+                lHeadsign: lHeadsign,
+                lRouteName: lRouteName
+              });
+            });
+          });
+          filterItems = function(query) {
+            return routeLists.filter(function(el) {
+              return (
+                el.lRouteName.indexOf(query.toUpperCase()) == 0
+              );
+            });
+          };
+          function updateList(items) {
+            var len = items.length;
+            var str = '';
 
-        var str = '';
-        for (i = 0; i < len; i++) {
-          str += `        
-              <li>
-                <i data-key1="${items[i].SubRoutes[0].Headsign}" data-key2="${
-            items[i].SubRoutes[0].SubRouteName.Zh_tw
-          }" class="fa fa-heart-o add" aria-hidden="true"></i>
-                <a href="selectbusInfo.html?Zh_tw=${
-                  items[i].SubRoutes[0].SubRouteName.Zh_tw
-                }" class="busLink">
-                  <span class="Headsign">${
-                    items[i].SubRoutes[0].Headsign
-                  }</span><br>
-                  <span class="RouteId">${
-                    items[i].SubRoutes[0].SubRouteName.Zh_tw
-                  }</span>
-                </a>
-              </li>
-            `;
+            for(i = 0; i < len; i++){
+              str += `
+                <li>
+                    <i data-key="${items[i].key}" data-key1="${items[i].lHeadsign}" data-key2="${items[i].lRouteName}" class="fa fa-heart-o add" aria-hidden="true"></i>
+                    <a href="selectbusInfo.html?Zh_tw=${items[i].lRouteName}" class="busLink">
+                    <span class="Headsign">${items[i].lHeadsign}</span><br>
+                    <span class="RouteId">${items[i].lRouteName}</span>
+                    </a>
+                </li>
+              `;
+            }
+            list.innerHTML = str;
+          }
+          updateList(filterItems(query));
+          // filterItems(query);
+        }else {
+          filterItems = function(query) {
+            return data.filter(function(el) {
+              return (
+                el.SubRoutes[0].SubRouteName.Zh_tw.indexOf(query.toUpperCase()) == 0
+              );
+            });
+          };
+    
+          function updateList(items) {
+            var len = items.length;
+            var str = '';
+
+            for (i = 0; i < len; i++) {
+              str += `        
+                  <li>
+                    <i data-key1="${items[i].SubRoutes[0].Headsign}" data-key2="${
+                items[i].SubRoutes[0].SubRouteName.Zh_tw
+              }" class="fa fa-heart-o add" aria-hidden="true"></i>
+                    <a href="selectbusInfo.html?Zh_tw=${
+                      items[i].SubRoutes[0].SubRouteName.Zh_tw
+                    }" class="busLink">
+                      <span class="Headsign">${
+                        items[i].SubRoutes[0].Headsign
+                      }</span><br>
+                      <span class="RouteId">${
+                        items[i].SubRoutes[0].SubRouteName.Zh_tw
+                      }</span>
+                    </a>
+                  </li>
+                `;
+            }
+            list.innerHTML = str;
+          }
+          updateList(filterItems(query));
         }
-        list.innerHTML = str;
-      }
-      updateList(filterItems(query));
+      });
+      
     }
 
     function allList(items) {
